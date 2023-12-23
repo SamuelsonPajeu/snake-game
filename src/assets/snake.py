@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
-from err import Error, nil
-from map import Map
+from src.game.game_event import Error, GameOver, nil
+from src.assets.map import Map
+
 
 
 @dataclass
@@ -11,6 +12,10 @@ class Snake:
     max_size : int = 4
     x : int = 0
     y : int = 0
+
+    def __post_init__(self):
+        # Set start position based on x, y
+        self.pos.append((self.x, self.y))
 
     def Move(self) -> None:
         match self.direction:
@@ -54,10 +59,13 @@ class Snake:
     def SetDirectionInput (self, dir: str) -> tuple[None, Error]:
         _, err = self.ValidateInput(dir)
 
+        if err:
+            return _, err
+
         if not self.isReverseMove(dir):
             self.direction = dir
 
-        return _, err
+        return nil()
 
     def CheckColission (self) -> bool:
         if (self.x, self.y) in self.pos: 
@@ -72,18 +80,7 @@ class Snake:
 
     def CheckGameOver (self) -> None:
         if self.CheckColission():
-            err = Error('Game Over')
+            err = GameOver('Game Over')
             raise(err)
 
-s = Snake()
-
-dir_input = 'UURDL'
-
-print(s.__dict__)
-for i in dir_input:
-    _, err = s.SetDirectionInput(i)
-    if err:
-        raise(err)
-
-    s.Move()
-    print(s.__dict__)
+s = Snake(max_size=1)
