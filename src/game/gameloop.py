@@ -52,7 +52,6 @@ class Game:
         
         self.update()
 
-
     def update(self) -> None:
         while self.run:
             # Screen
@@ -113,5 +112,3 @@ class Game:
 
         if err:
             raise(err)
-
-# s = snake.Snake()

@@ -23,18 +23,13 @@ def test_cross_map_y():
     assert s.y == m.y - 1
 
 def test_collision():
-    m = map.Map(x = 10, y =10)
-    s = snake.Snake(map = m, max_size = 5)
+    m = map.Map(x = 3, y = 1)
+    s = snake.Snake(map = m, max_size = 4)
 
-    dir_input = 'UUURDL'
+    for i in range(m.x):
+        s.Move()
 
-    with pytest.raises(game_event.GameOver):
-        for i in dir_input:
-            _, err = s.SetDirectionInput(i)
-            if err:
-                raise(err)
-
-            s.Move()
+    assert s.can_move is False
 
 def test_input_validation():
     s = snake.Snake()
