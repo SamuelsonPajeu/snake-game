@@ -12,12 +12,14 @@ from src.game.game_event import nil, GameOver
 class Colors:
     BLACK = (0,0,0)
     BLOCK_LINES = (50, 50, 50)
+    WHITE = (255,255,255)
     TAIL = (96, 96, 96)
     HEAD = (0, 255, 0)
     FOOD = (255,0,0)
 @dataclass
 class Game:
     screen: pygame.Surface = field(init=False)
+    font: pygame.font.Font = field(init=False)
     CLOCK: pygame.time.Clock = field(init=False)
     colors: Colors = field(default_factory=Colors)
     SCREEN_WIDTH: int = 800
@@ -40,6 +42,7 @@ class Game:
 
         self.run = True
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        self.font = pygame.font.SysFont(None, 48)
 
         self.screen.fill(self.colors.BLACK)
         
@@ -58,13 +61,18 @@ class Game:
             self.CLOCK.tick(10)
             self.screen.fill(self.colors.BLACK)
 
-            if self.snake.can_move:
-                self.snake.Move()
-
             self.drawSnake()
             self.drawGrid()
 
+            
+            if self.snake.can_move:
+                self.renderTextLabel(text=str(self.snake.score), x=10,y=10)
+                self.snake.Move()
+            else:
+                self.drawGameOver()
+
             self.drawFood()
+
 
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
@@ -96,7 +104,33 @@ class Game:
     def drawFood(self) -> None:
         rect = pygame.Rect(self.snake.food.x * self.block_size_x, self.snake.food.y * self.block_size_y, self.block_size_x, self.block_size_y)
         pygame.draw.rect(self.screen, self.colors.FOOD ,rect)
+
+    def drawGameOver(self) -> None:
+        img = self.getTextImg(text="Press 'R' to restart")
+        rect = img.get_rect()
+        img2 = self.getTextImg(text=f"Score: {str(self.snake.score)}")
+        rect2 = img2.get_rect()
+        self.renderTextImg(img,
+                            x=int(self.SCREEN_WIDTH/2) - rect.width / 2,
+                            y=int(self.SCREEN_HEIGHT/2)- rect.height / 2 - 20)
+        self.renderTextImg(img2,
+                            x=int(self.SCREEN_WIDTH/2) - rect2.width / 2,
+                            y=int(self.SCREEN_HEIGHT/2)- rect2.height / 2 + 20)
+
+    def renderTextLabel(self, text: str,x: int = 0, y: int = 0, color: tuple = Colors.WHITE):
+        img = self.getTextImg(text=text, color=color)
+        self.renderTextImg(img=img, x=x, y=y)
     
+    def getTextImg(self, text: str, color: tuple = Colors.WHITE) -> pygame.surface.Surface:
+        return self.font.render(text, True, color)
+    
+    def renderTextImg(self, img: pygame.surface.Surface, x: int = 0, y: int=0) -> None:
+        self.screen.blit(img, (x, y))
+
+    def restartGame(self) -> None:
+        if not self.snake.can_move:
+            self.snake = Snake(max_size=6, x=int(self.map.x/2), y=int(self.map.y/2))
+        
     def checkInput(self, key) -> None:
         _, err = nil()
 
@@ -109,6 +143,8 @@ class Game:
                 _, err = self.snake.SetDirectionInput('U')
             case pygame.K_s | pygame.K_DOWN:
                 _, err = self.snake.SetDirectionInput('D')
+            case pygame.K_r:
+                self.restartGame()
 
         if err:
             raise(err)

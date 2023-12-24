@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from src.game.game_event import Error, GameOver, nil
 from src.assets.map import Map
 from src.assets.food import Food
+from src.assets.math_utils import Math
 
 import random
 
@@ -17,7 +18,7 @@ class Snake:
     x : int = 0
     y : int = 0
     can_move: bool = True
-    score = 0
+    score: float = 0
 
     def __post_init__(self):
         # Set start position based on x, y
@@ -82,7 +83,6 @@ class Snake:
         return nil()
 
     def CheckColission (self) -> bool:
-
         if (self.x, self.y) in self.pos and len(self.pos) > 1:
             # print(self.__dict__)
             # print(f'tried to walk ok ({self.x}, {self.y})')
@@ -90,6 +90,7 @@ class Snake:
         self.pos.append((self.x, self.y))
 
         if (self.x == self.food.x and self.y == self.food.y):
+            self.score += 10 * Math.lerp(len(self.map.grid), len(self.map.grid) /2, len(self.GetAvaliableSpaces()),1,2)
             self.max_size += 1
             self.SpawFood()
 
@@ -101,13 +102,17 @@ class Snake:
     def CheckGameOver (self) -> bool:
         if self.CheckColission():
             print('GAME OVER')
+            print(f'SCORE: {self.score}')
             self.can_move = False
 
             # err = GameOver('Game Over')
             # raise(err)
 
+    def GetAvaliableSpaces (self) -> list:
+        return [i for i in self.map.grid if (i[0], i[1]) not in self.pos]
+
     def SpawFood (self) -> None:
-        avaliable_space = [i for i in self.map.grid if (i[0], i[1]) not in self.pos]
+        avaliable_space = self.GetAvaliableSpaces()
 
         if avaliable_space:
             spawn_location = random.choice(avaliable_space)
