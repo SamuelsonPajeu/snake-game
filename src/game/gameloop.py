@@ -1,4 +1,5 @@
 import pygame
+import sys
 
 from dataclasses import dataclass, field
 
@@ -63,14 +64,6 @@ class Game:
 
             self.drawSnake()
             self.drawGrid()
-
-            
-            if self.snake.can_move:
-                self.renderTextLabel(text=str(self.snake.score), x=10,y=10)
-                self.snake.Move()
-            else:
-                self.drawGameOver()
-
             self.drawFood()
 
 
@@ -80,6 +73,12 @@ class Game:
                 
                 if event.type == pygame.QUIT:
                     self.run = False
+
+            if self.snake.can_move:
+                self.renderTextLabel(text=str(int(self.snake.score)), x=10,y=10)
+                self.snake.Move()
+            else:
+                self.drawGameOver()
 
             pygame.display.update()
 
@@ -145,6 +144,8 @@ class Game:
                 _, err = self.snake.SetDirectionInput('D')
             case pygame.K_r:
                 self.restartGame()
+            case pygame.K_ESCAPE:
+                sys.exit()
 
         if err:
             raise(err)
