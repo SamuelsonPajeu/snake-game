@@ -62,8 +62,9 @@ class Game:
             if self.snake.can_move:
                 self.snake.Move()
 
-            self.drawGrid()
             self.drawSnake()
+            self.drawGrid()
+
             self.drawFood()
 
             for event in pygame.event.get():
@@ -76,7 +77,6 @@ class Game:
             pygame.display.update()
 
         pygame.quit()
-
 
     def drawGrid(self) -> None:
         for x in range(0, self.SCREEN_WIDTH, self.block_size_x):
