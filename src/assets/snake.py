@@ -1,22 +1,23 @@
 from dataclasses import dataclass, field
-from src.game.game_event import Error, GameOver, nil
+from src.game.game_event import Error, nil
 from src.assets.map import Map
 from src.assets.food import Food
 from src.assets.math_utils import Math
 
 import random
 
+
 @dataclass
 class Snake:
-    map: Map = field(default_factory = Map)
-    food: Food = field(default_factory = Food)
+    map: Map=field(default_factory=Map)
+    food: Food=field(default_factory = Food)
     pos: list = field(default_factory = lambda: [])
     direction: str = 'R'
     direction_input: str = ''
     processed_last_input: bool = False
-    max_size : int = 4
-    x : int = 0
-    y : int = 0
+    max_size: int = 4
+    x: int = 0
+    y: int = 0
     can_move: bool = True
     score: float = 0
 
@@ -31,25 +32,25 @@ class Snake:
 
         match self.direction:
             case 'R':
-                self.x = self.x + 1 if (self.x + 1) < self.map.x else 0
+                self.x = self.x + 1 if(self.x + 1) < self.map.x else 0
             case 'L':
-                self.x = self.x - 1 if (self.x - 1) >= 0 else self.map.x - 1
+                self.x = self.x - 1 if(self.x - 1) >= 0 else self.map.x - 1
             case 'U':
-                self.y = self.y - 1 if (self.y - 1) >= 0 else self.map.y - 1
+                self.y = self.y - 1 if(self.y - 1) >= 0 else self.map.y - 1
             case 'D':
-                self.y = self.y + 1 if (self.y + 1) < self.map.y else 0
+                self.y = self.y + 1 if(self.y + 1) < self.map.y else 0
 
         self.processed_last_input = True
         self.CheckGameOver()
 
     def ValidateInput(self, input: str) -> tuple[None, Error]:
         if len(input) > 1:
-            err = Error("Direction Input should contain only one Character (L,R,U,D)")
+            err = Error("Direction Input should contain only one Character(L,R,U,D)")
             return None, err
 
         valid_directions = ['L', 'R', 'U', 'D']
-        if (input not in valid_directions):
-            err = Error(f"{input} is not a valid direction (L,R,U,D)")
+        if(input not in valid_directions):
+            err = Error(f"{input} is not a valid direction(L,R,U,D)")
             return None, err
 
         return nil()
@@ -57,18 +58,18 @@ class Snake:
     def isReverseMove(self, desiredDirection: str) -> bool:
         atual_direction = self.direction
         reverse_moves = {
-            'L' : 'R',
-            'R' : 'L',
-            'D' : 'U',
-            'U' : 'D'
+            'L': 'R',
+            'R': 'L',
+            'D': 'U',
+            'U': 'D'
         }
-        
+
         # print(f'Atual Dir: {atual_direction} | Desired Dir: {desiredDirection}')
         # print(f'Reverse Move for atualdir: {reverse_moves[atual_direction]}')
-        
+
         return reverse_moves[atual_direction] == desiredDirection
 
-    def SetDirectionInput (self, dir: str) -> tuple[None, Error]:
+    def SetDirectionInput(self, dir: str) -> tuple[None, Error]:
         _, err = self.ValidateInput(dir)
 
         if err:
@@ -82,14 +83,14 @@ class Snake:
 
         return nil()
 
-    def CheckColission (self) -> bool:
-        if (self.x, self.y) in self.pos and len(self.pos) > 1:
+    def CheckColission(self) -> bool:
+        if(self.x, self.y) in self.pos and len(self.pos) > 1:
             # print(self.__dict__)
-            # print(f'tried to walk ok ({self.x}, {self.y})')
+            # print(f'tried to walk ok({self.x}, {self.y})')
             return True
         self.pos.append((self.x, self.y))
 
-        if (self.x == self.food.x and self.y == self.food.y):
+        if(self.x == self.food.x and self.y == self.food.y):
             self.score += 10 * Math.lerp(len(self.map.grid), len(self.map.grid) /2, len(self.GetAvaliableSpaces()),1,2)
             self.max_size += 1
             self.SpawFood()
@@ -99,7 +100,7 @@ class Snake:
 
         return False
 
-    def CheckGameOver (self) -> bool:
+    def CheckGameOver(self) -> bool:
         if self.CheckColission():
             print('GAME OVER')
             print(f'SCORE: {self.score}')
@@ -108,10 +109,10 @@ class Snake:
             # err = GameOver('Game Over')
             # raise(err)
 
-    def GetAvaliableSpaces (self) -> list:
-        return [i for i in self.map.grid if (i[0], i[1]) not in self.pos]
+    def GetAvaliableSpaces(self) -> list:
+        return [i for i in self.map.grid if(i[0], i[1]) not in self.pos]
 
-    def SpawFood (self) -> None:
+    def SpawFood(self) -> None:
         avaliable_space = self.GetAvaliableSpaces()
 
         if avaliable_space:
