@@ -5,28 +5,28 @@ from src.game import game_event
 
 
 def test_cross_map_x():
-    m = map.Map(x = 2, y = 1)
+    m = map.Map(x = 3, y = 1)
     s = snake.Snake(x = 0, direction = 'R', map = m, max_size = 1)
-    input = ['R' for i in range(m.x + 1)]
+    input = ['R' for i in range(m.x)]
     for i in input:
         s.Move()
 
     assert s.x == 0
 
 def test_cross_map_y():
-    m = map.Map(x = 1, y = 2)
+    m = map.Map(x = 1, y = 3)
     s = snake.Snake(y = m.y, direction='D', map = m, max_size = 1)
-    input = ['D' for i in range(m.y + 1)]
+    input = ['D' for i in range(m.y)]
     for i in input:
         s.Move()
 
-    assert s.y == m.y
+    assert s.y == m.y - 1
 
 def test_collision():
-    m = map.Map(x = 5, y =5)
-    s = snake.Snake(map = m, max_size = 4)
+    m = map.Map(x = 10, y =10)
+    s = snake.Snake(map = m, max_size = 5)
 
-    dir_input = 'UURDL'
+    dir_input = 'UUURDL'
 
     with pytest.raises(game_event.GameOver):
         for i in dir_input:
