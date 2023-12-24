@@ -108,10 +108,7 @@ class Snake:
 
     def SpawFood (self) -> None:
         avaliable_space = [i for i in self.map.grid if (i[0], i[1]) not in self.pos]
-        
-        # print(avaliable_space, len(avaliable_space))
-        # print(self.pos, len(self.pos))
-        
+
         if avaliable_space:
             spawn_location = random.choice(avaliable_space)
             self.food.x, self.food.y = spawn_location[0], spawn_location[1]

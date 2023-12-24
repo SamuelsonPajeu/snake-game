@@ -58,3 +58,19 @@ def test_input_reverse_rule():
 
         s.Move()
         assert s.direction == x
+
+def test_pick_up_food():
+    m = map.Map(x = 2,y = 1)
+    s = snake.Snake(x = 0, y = 0, map=m, direction='R', max_size = 1)
+    s.food.x, s.food.y = s.x + 1, s.y
+    assert len(s.pos) == 1
+    assert s.max_size == 1
+
+    s.Move()
+
+    assert len(s.pos) == 2
+    assert s.max_size == 2
+
+    #Test full map
+    assert s.food.x == -1
+    assert s.food.y == -1
